@@ -1,0 +1,29 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.App{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 44px;
+}
+
+.header p{
+  text-align: left;
+}
+
+.input-area{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+
+}
+
+.image{
+  width: 300px;
+}
