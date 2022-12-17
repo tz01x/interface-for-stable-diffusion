@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Skeleton from '@mui/material/Skeleton';
 import Box from '@mui/material/Box';
-import LinearProgress  from '@mui/material/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 import './App.css'
 
 
@@ -22,6 +22,7 @@ function App() {
   }
   const gethuggingFaceData = async (text) => {
     setLoading(true);
+    let response = null;
     // let response = await fetch("https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5", {
     //   "headers": {
     //     "accept": "*/*",
@@ -37,36 +38,39 @@ function App() {
     //   "body": JSON.stringify({ inputs: text }),
     //   "method": "POST"
     // });
-
-    let response = fetch("https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4", {
-      "headers": {
-        "accept": "*/*",
-        "accept-language": "en-US,en;q=0.9",
-        "content-type": "application/json",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-site",
-        "x-use-cache": "false",
-        "cookie": "_ga=GA1.2.271645918.1662137258; __stripe_mid=46018beb-5151-4c69-8bad-409b0c8da7fea29e19; token=HraZMiSxGPJsJfMTmQMkRDKhOfoLYEZJiZSMWGVbvNjYZBeKWbObDwuHimjIEeYBYcrsYJOuUkdfTQmDwrQASjBSGCXSjoFjVmrylbDszjQSAQPEGSgekxDBYkQYkAao; _gid=GA1.2.1955059469.1670945464; AWSALB=XxPYRyMIdkOQp7fgOV5iwc1gAp1MJbmUmPnMYEHxUN7Ov69ziI+LbrZER9ttdZOa/VbMQ6svea+zd/eM8JI5JRMMdntaIYHERCMV5B0WdBs5YJ8eXQYYZSCCNjSB; AWSALBCORS=XxPYRyMIdkOQp7fgOV5iwc1gAp1MJbmUmPnMYEHxUN7Ov69ziI+LbrZER9ttdZOa/VbMQ6svea+zd/eM8JI5JRMMdntaIYHERCMV5B0WdBs5YJ8eXQYYZSCCNjSB",
-        "Referer": "https://huggingface.co/",
-        "Referrer-Policy": "strict-origin-when-cross-origin"
-      },
-      "body": JSON.stringify({ inputs: text }),
-      "method": "POST"
-    });
-
-    if (response.status != 200) {
-      setError('Model is loading. Please wait..')
-    } 
-    else {
-      if(!error){
-        setError(false)
+    try {
+      response = await fetch("https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4", {
+        "headers": {
+          "accept": "*/*",
+          "accept-language": "en-US,en;q=0.9",
+          "content-type": "application/json",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-site",
+          "x-use-cache": "false",
+          "cookie": "_ga=GA1.2.271645918.1662137258; __stripe_mid=46018beb-5151-4c69-8bad-409b0c8da7fea29e19; token=HraZMiSxGPJsJfMTmQMkRDKhOfoLYEZJiZSMWGVbvNjYZBeKWbObDwuHimjIEeYBYcrsYJOuUkdfTQmDwrQASjBSGCXSjoFjVmrylbDszjQSAQPEGSgekxDBYkQYkAao; _gid=GA1.2.1955059469.1670945464; AWSALB=XxPYRyMIdkOQp7fgOV5iwc1gAp1MJbmUmPnMYEHxUN7Ov69ziI+LbrZER9ttdZOa/VbMQ6svea+zd/eM8JI5JRMMdntaIYHERCMV5B0WdBs5YJ8eXQYYZSCCNjSB; AWSALBCORS=XxPYRyMIdkOQp7fgOV5iwc1gAp1MJbmUmPnMYEHxUN7Ov69ziI+LbrZER9ttdZOa/VbMQ6svea+zd/eM8JI5JRMMdntaIYHERCMV5B0WdBs5YJ8eXQYYZSCCNjSB",
+          "Referer": "https://huggingface.co/",
+          "Referrer-Policy": "strict-origin-when-cross-origin"
+        },
+        "body": JSON.stringify({ inputs: text }),
+        "method": "POST"
+      });
+      if (response.status == 503) {
+        setError('Model is loading. Please wait.. and Compute angain')
+      }
+      if (!!error) {
+        setError(null)
       }
       let newblob = await response.blob();
       let objectURL = URL.createObjectURL(newblob);
       setImageSrc(objectURL);
+    } catch (e) {
+      setError(e)
+      
     }
-    
+
+
+
     setLoading(false);
 
   }
@@ -106,16 +110,16 @@ function App() {
         </div>
         <p> <small>Example: A high tech solarpunk utopia in the Amazon rainforest</small> </p>
       </div>
-      
-      {error?
-          <>
-            {error}
-            <Box sx={{ width: '300px' }}>
-              <LinearProgress variant="determinate" value={progress} />
-            </Box>
-          </>
-       :null  
-      }    
+
+      {error ?
+        <>
+          {error}
+          <Box sx={{ width: '300px' }}>
+            <LinearProgress variant="determinate" value={progress} />
+          </Box>
+        </>
+        : null
+      }
 
 
       <div>
